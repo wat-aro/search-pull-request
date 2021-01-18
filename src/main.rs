@@ -1,4 +1,6 @@
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
+use std::io::{stdin, stdout, Write};
 
 #[derive(Debug, Serialize)]
 struct DeviceCodeParams<'a> {
@@ -30,6 +32,17 @@ async fn main() -> Result<(), reqwest::Error> {
 
     let device_code_response: DeviceCodeResponse = request.send().await?.json().await?;
 
-    println!("{:#?}", device_code_response);
+    println!(
+        "{} First copy your one-time code: {}",
+        "!".yellow(),
+        device_code_response.user_code
+    );
+    print!(
+        "{} to open github.com in your browser... ",
+        "Press Enter".bold()
+    );
+    stdout().flush().unwrap();
+    let mut s: String = String::new();
+    stdin().read_line(&mut s).unwrap();
     Ok(())
 }
