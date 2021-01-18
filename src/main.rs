@@ -1,6 +1,8 @@
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::io::{stdin, stdout, Write};
+use std::process::Command;
 
 #[derive(Debug, Serialize)]
 struct DeviceCodeParams<'a> {
@@ -44,5 +46,12 @@ async fn main() -> Result<(), reqwest::Error> {
     stdout().flush().unwrap();
     let mut s: String = String::new();
     stdin().read_line(&mut s).unwrap();
+
+    let launcher = env::var("BROWSER").unwrap_or(String::from("open"));
+    Command::new(launcher)
+        .args(&[device_code_response.verification_uri])
+        .output()
+        .expect("Failed to open browser");
+    println!("Wait for input");
     Ok(())
 }
