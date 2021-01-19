@@ -19,6 +19,34 @@ struct DeviceCodeResponse {
     interval: u32,
 }
 
+#[derive(Debug, Serialize)]
+struct AccessTokenParams<'a> {
+    client_id: &'a str,
+    device_code: &'a str,
+    grant_type: &'a str,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AccessTokenResponse {
+    access_token: String,
+    token_type: String,
+    scope: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AccessTokenErrorResponse {
+    error_description: String,
+    error: String,
+    error_uri: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+enum AccessTokenResponseType {
+    Ok(AccessTokenResponse),
+    Err(AccessTokenErrorResponse),
+}
+
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
     let client_id = "2db88301ea022dd5bc00";
@@ -52,6 +80,29 @@ async fn main() -> Result<(), reqwest::Error> {
         .args(&[device_code_response.verification_uri])
         .output()
         .expect("Failed to open browser");
-    println!("Wait for input");
+
+    let grant_type = "urn:ietf:params:oauth:grant-type:device_code";
+    let access_token_params = AccessTokenParams {
+        client_id,
+        device_code: &device_code_response.device_code,
+        grant_type,
+    };
+
+    let request = reqwest::Client::new()
+        .post("https://github.com/login/oauth/access_token")
+        .header(reqwest::header::ACCEPT, "application/vnd.github.v3+json")
+        .json(&access_token_params);
+
+    let response = request
+        .send()
+        .await?
+        .json::<AccessTokenResponseType>()
+        .await?;
+
+    match response {
+        AccessTokenResponseType::Ok(success) => println!("{:#?}", success),
+        AccessTokenResponseType::Err(error) => println!("{:#?}", error),
+    };
+
     Ok(())
 }
