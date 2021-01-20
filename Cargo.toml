@@ -1,5 +1,5 @@
 [package]
-name = "search-pull-request"
+name = "spr"
 version = "0.1.0"
 authors = ["wat-aro <kazutas1008@gmail.com>"]
 edition = "2018"
