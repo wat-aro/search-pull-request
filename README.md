@@ -1,2 +1,2 @@
-# search-pull-request
+# Search Pull Request
 Search pull request by commit hash

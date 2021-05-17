@@ -1,0 +1,16 @@
+[package]
+name = "spr"
+version = "0.1.0"
+authors = ["wat-aro <kazutas1008@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+colored = "2"
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0.119", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+serde_json = "1.0"
